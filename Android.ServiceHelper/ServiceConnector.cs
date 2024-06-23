@@ -14,7 +14,7 @@ namespace Asjc.Android.ServiceHelper
         public event Action<ComponentName?, ServiceBinder<T>?>? ServiceConnected;
         public event Action<ComponentName?>? ServiceDisconnected;
 
-        public void ExecuteWhenConnected(Action<T?> action)
+        public void WhenConnected(Action<T?> action)
         {
             if (Connected)
             {
