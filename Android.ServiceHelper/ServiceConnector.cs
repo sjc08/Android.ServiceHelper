@@ -14,13 +14,30 @@ namespace Asjc.Android.ServiceHelper
         public event Action<ComponentName?, ServiceBinder<T>?>? ServiceConnected;
         public event Action<ComponentName?>? ServiceDisconnected;
 
-        public void OnServiceConnected(ComponentName? name, IBinder? service)
+        public void ExecuteWhenConnected(Action<T?> action)
+        {
+            if (Connected)
+            {
+                action(Service);
+            }
+            else
+            {
+                void Handler(ComponentName? name, ServiceBinder<T>? binder)
+                {
+                    ServiceConnected -= Handler;
+                    action(Service);
+                }
+                ServiceConnected += Handler;
+            }
+        }
+
+        void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
             Binder = (ServiceBinder<T>?)service;
             ServiceConnected?.Invoke(name, Binder);
         }
 
-        public void OnServiceDisconnected(ComponentName? name)
+        void IServiceConnection.OnServiceDisconnected(ComponentName? name)
         {
             Binder = null;
             ServiceDisconnected?.Invoke(name);
