@@ -39,8 +39,10 @@ namespace Asjc.Android.ServiceHelper
         /// Note: Whether the service is connected is determined by the <see cref="Connected"/> property.
         /// </remarks>
         /// <param name="action">The action to execute.</param>
-        public void WhenConnected(Action<T?> action)
+        public void WhenConnected(Action<T> action)
         {
+            // Since Connected is true, Binder isn't null, which means Service isn't null.
+            // Hence, action(Service) won't receive a null value for Service.
             if (Connected)
             {
                 action(Service);
