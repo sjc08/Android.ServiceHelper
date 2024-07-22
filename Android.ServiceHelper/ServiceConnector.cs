@@ -34,9 +34,9 @@ namespace Asjc.Android.ServiceHelper
         /// Executes an action when the service is connected.
         /// </summary>
         /// <remarks>
-        /// If the service is already connected, the action is executed immediately.
-        /// If the service is not yet connected, the action is executed once the service is connected.
-        /// Note: Whether the service is connected is determined by the <see cref="Connected"/> property.
+        /// If the service is already connected, <paramref name="action"/> is executed immediately.
+        /// If the service is not yet connected, <paramref name="action"/> is executed once the service is connected.
+        /// Note: Whether the service is connected is determined by <see cref="Connected"/>.
         /// </remarks>
         /// <param name="action">The action to execute.</param>
         public void WhenConnected(Action<T> action)
@@ -45,7 +45,7 @@ namespace Asjc.Android.ServiceHelper
             // Hence, action(Service) won't receive a null value for Service.
             if (Connected)
             {
-                action(Service);
+                action(Service!);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace Asjc.Android.ServiceHelper
                     if (Connected)
                     {
                         ServiceConnected -= Handler;
-                        action(Service);
+                        action(Service!);
                     }
                 }
                 ServiceConnected += Handler;
@@ -63,7 +63,7 @@ namespace Asjc.Android.ServiceHelper
 
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
-            Binder = (ServiceBinder<T>?)service;
+            Binder = service as ServiceBinder<T>;
             ServiceConnected?.Invoke(name, Binder);
         }
 
