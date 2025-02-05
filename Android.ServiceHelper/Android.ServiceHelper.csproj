@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.3.5</Version>
+    <Version>1.3.6</Version>
     <Authors>AlexSJC</Authors>
     <Description>A library for Service in Android.</Description>
     <Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>

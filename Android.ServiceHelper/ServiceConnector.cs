@@ -3,6 +3,7 @@ using Android.OS;
 
 namespace Asjc.Android.ServiceHelper
 {
+    /// <typeparam name="T">The type of the service.</typeparam>
     public class ServiceConnector<T> : Java.Lang.Object, IServiceConnection where T : Service
     {
         /// <summary>
@@ -23,7 +24,7 @@ namespace Asjc.Android.ServiceHelper
         /// <summary>
         /// Occurs when the service is connected.
         /// </summary>
-        public event Action<ComponentName?, ServiceBinder<T>?>? ServiceConnected;
+        public event Action<ComponentName?, ServiceBinder<T>>? ServiceConnected;
 
         /// <summary>
         /// Occurs when the service is disconnected.
@@ -34,28 +35,23 @@ namespace Asjc.Android.ServiceHelper
         /// Executes an action when the service is connected.
         /// </summary>
         /// <remarks>
-        /// If the service is already connected, <paramref name="action"/> is executed immediately.
+        /// If the service is already connected, <paramref name="action"/> is executed immediately.<br/>
         /// If the service is not yet connected, <paramref name="action"/> is executed once the service is connected.
-        /// Note: Whether the service is connected is determined by <see cref="Connected"/>.
         /// </remarks>
         /// <param name="action">The action to execute.</param>
         public void WhenConnected(Action<T> action)
         {
-            // Since Connected is true, Binder isn't null, which means Service isn't null.
-            // Hence, action(Service) won't receive a null value for Service.
+            // Maybe Service can't be null.
             if (Connected)
             {
                 action(Service!);
             }
             else
             {
-                void Handler(ComponentName? name, ServiceBinder<T>? binder)
+                void Handler(ComponentName? name, ServiceBinder<T> binder)
                 {
-                    if (Connected)
-                    {
-                        ServiceConnected -= Handler;
-                        action(Service!);
-                    }
+                    ServiceConnected -= Handler;
+                    action(Service!);
                 }
                 ServiceConnected += Handler;
             }
@@ -64,13 +60,17 @@ namespace Asjc.Android.ServiceHelper
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
             Binder = service as ServiceBinder<T>;
-            ServiceConnected?.Invoke(name, Binder);
+            if (Connected)
+                ServiceConnected?.Invoke(name, Binder!);
         }
 
         void IServiceConnection.OnServiceDisconnected(ComponentName? name)
         {
-            Binder = null;
-            ServiceDisconnected?.Invoke(name);
+            if (Connected)
+            {
+                Binder = null;
+                ServiceDisconnected?.Invoke(name);
+            }
         }
     }
 }
