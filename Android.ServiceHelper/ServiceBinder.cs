@@ -2,12 +2,22 @@
 
 namespace Asjc.Android.ServiceHelper
 {
-    /// <typeparam name="T">The type of the service.</typeparam>
-    public class ServiceBinder<T>(T service) : Binder where T : Service
+    public class ServiceBinder : Binder
     {
-        /// <summary>
-        /// The bound service.
-        /// </summary>
-        public T Service { get; } = service;
+        public ServiceBinder() { }
+
+        public ServiceBinder(Service service) => Service = service;
+
+        public required Service Service { get; init; }
+    }
+
+    /// <typeparam name="T">The type of the service.</typeparam>
+    public class ServiceBinder<T> : Binder where T : Service
+    {
+        public ServiceBinder() { }
+
+        public ServiceBinder(T service) => Service = service;
+
+        public required T Service { get; init; }
     }
 }
