@@ -15,12 +15,12 @@ namespace Asjc.Android.ServiceHelper
         /// <summary>
         /// Occurs when the service is connected.
         /// </summary>
-        public event Action<ComponentName?, ServiceBinder>? Connected;
+        public event Action<ServiceConnector, Service>? Connected;
 
         /// <summary>
         /// Occurs when the service is disconnected.
         /// </summary>
-        public event Action<ComponentName?>? Disconnected;
+        public event Action<ServiceConnector>? Disconnected;
 
         /// <summary>
         /// Executes an action when the service is connected.
@@ -38,18 +38,18 @@ namespace Asjc.Android.ServiceHelper
             }
             else
             {
-                void Handler(ComponentName? name, ServiceBinder binder)
+                void Handler(ServiceConnector connector, Service service)
                 {
                     Connected -= Handler;
-                    action(Binder!.Service);
+                    action(service);
                 }
                 Connected += Handler;
             }
         }
 
-        protected void OnConnected(ComponentName? name, ServiceBinder binder) => Connected?.Invoke(name, binder);
+        protected void OnConnected(ComponentName? name, ServiceBinder binder) => Connected?.Invoke(this, binder.Service);
 
-        protected void OnDisconnected(ComponentName? name) => Disconnected?.Invoke(name);
+        protected void OnDisconnected(ComponentName? name) => Disconnected?.Invoke(this);
 
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
@@ -78,12 +78,12 @@ namespace Asjc.Android.ServiceHelper
         /// <summary>
         /// Occurs when the service is connected.
         /// </summary>
-        public event Action<ComponentName?, ServiceBinder<T>>? Connected;
+        public event Action<ServiceConnector<T>, T>? Connected;
 
         /// <summary>
         /// Occurs when the service is disconnected.
         /// </summary>
-        public event Action<ComponentName?>? Disconnected;
+        public event Action<ServiceConnector<T>>? Disconnected;
 
         /// <summary>
         /// Executes an action when the service is connected.
@@ -101,18 +101,18 @@ namespace Asjc.Android.ServiceHelper
             }
             else
             {
-                void Handler(ComponentName? name, ServiceBinder<T> binder)
+                void Handler(ServiceConnector<T> connector, T service)
                 {
                     Connected -= Handler;
-                    action(Binder!.Service);
+                    action(service);
                 }
                 Connected += Handler;
             }
         }
 
-        protected void OnConnected(ComponentName? name, ServiceBinder<T> binder) => Connected?.Invoke(name, binder);
+        protected void OnConnected(ComponentName? name, ServiceBinder<T> binder) => Connected?.Invoke(this, binder.Service);
 
-        protected void OnDisconnected(ComponentName? name) => Disconnected?.Invoke(name);
+        protected void OnDisconnected(ComponentName? name) => Disconnected?.Invoke(this);
 
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
