@@ -116,7 +116,7 @@ namespace Asjc.Android.ServiceHelper
 
         void IServiceConnection.OnServiceConnected(ComponentName? name, IBinder? service)
         {
-            Binder = service as ServiceBinder<T>;
+            Binder = service as ServiceBinder<T> ?? throw new InvalidOperationException("The service returned an invalid binder.");
             if (IsConnected)
                 OnConnected(name, Binder!);
         }
